@@ -78,6 +78,7 @@ private extension VirtualMachineSSHClient {
         do {
             try Task.checkCancellation()
             return try await connectToVirtualMachine(named: virtualMachineName, on: host)
+            logger.info("connected to virtual machine")
         } catch {
             logger.error(
                 "Attempt \(attempt) out of \(maximumAttempts) to establish an SSH connection"
@@ -120,6 +121,7 @@ private extension VirtualMachineSSHClient {
             throw VirtualMachineSSHClientError.missingSSHPassword
         }
         do {
+            logger.info("Going to connect to \(virtualMachineName) on \(host)")
             return try await client.connect(host: host, username: username, password: password)
         } catch {
             logger.error(

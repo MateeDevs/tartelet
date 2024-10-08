@@ -37,6 +37,7 @@ public struct GitHubActionsRunnerSSHConnectionHandler: VirtualMachineSSHConnecti
 
     // swiftlint:disable:next function_body_length
     public func didConnect(to virtualMachine: VirtualMachine, through connection: SSHConnection) async throws {
+        logger.info("Dit connect called")
         let runnerURL = try await getRunnerURL()
         let appAccessToken = try await client.getAppAccessToken(runnerScope: configuration.runnerScope)
         let runnerToken = try await client.getRunnerRegistrationToken(
@@ -51,7 +52,7 @@ public struct GitHubActionsRunnerSSHConnectionHandler: VirtualMachineSSHConnecti
         try await connection.executeCommand("touch \(startRunnerScriptFilePath)")
         try await connection.executeCommand("""
 cat > \(startRunnerScriptFilePath) << EOF
-#!/bin/zsh
+#!/bin/zsh -l
 ACTIONS_RUNNER_ARCHIVE=./actions-runner.tar.gz
 ACTIONS_RUNNER_DIRECTORY=~/actions-runner
 
@@ -112,7 +113,8 @@ cd \\$ACTIONS_RUNNER_DIRECTORY
 EOF
 """)
         try await connection.executeCommand("chmod +x \(startRunnerScriptFilePath)")
-        try await connection.executeCommand("open -a Terminal \(startRunnerScriptFilePath)")
+//        try await connection.executeCommand("open -a Terminal \(startRunnerScriptFilePath)")
+        try await connection.executeCommand("nohup \(startRunnerScriptFilePath) > runner_script.log 2>&1 &")
     }
 }
 

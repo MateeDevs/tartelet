@@ -20,7 +20,7 @@ public struct Tart {
     }
 
     public func run(name: String) async throws {
-        try await executeCommand(withArguments: ["run", name])
+        try await executeCommand(withArguments: ["run", name, "--dir", "host_chache:/Users/Tadeas/.host_cache"])
     }
 
     public func delete(name: String) async throws {
